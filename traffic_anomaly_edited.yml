@@ -1,0 +1,103 @@
+groups:
+  - name: traffic_anomaly
+    rules:
+
+      # Rule 1: Anomali Domestik - X
+      - alert: AnomaliDomestik_X
+        expr: |
+          abs(
+            (sum by (host) (
+              rate(ifHCInOctets{job="MONITORING", host="INET SERVER DC X", ifAlias="2020240039-IIX"}[2m])
+              +
+              rate(ifHCOutOctets{job="MONITORING", host="INET SERVER DC X", ifAlias="2020240039-IIX"}[2m])
+            ) * 8)
+            -
+            (sum by (host) (
+              rate(ifHCInOctets{job="MONITORING", host="INET SERVER DC X", ifAlias="2020240039-IIX"}[2m] offset 5m)
+              +
+              rate(ifHCOutOctets{job="MONITORING", host="INET SERVER DC X", ifAlias="2020240039-IIX"}[2m] offset 5m)
+            ) * 8)
+          ) / 1000000000 > 0.20
+        for: 0m
+        labels:
+          severity: warning
+          category: domestik
+          provider: "X"
+        annotations:
+          summary: "Anomali Domestik - X"
+          description: "Perubahan trafik domestik (gabungan download & upload) pada {{ $labels.host }} melebihi threshold 20% (basis 1 Gbps)"
+
+      # Rule 2: Anomali Internasional - X
+      - alert: AnomaliInternasional_X
+        expr: |
+          abs(
+            (sum by (host) (
+              rate(ifHCInOctets{job="MONITORING", host="INET SERVER DC X", ifAlias="2020240040-IX"}[2m])
+              +
+              rate(ifHCOutOctets{job="MONITORING", host="INET SERVER DC X", ifAlias="2020240040-IX"}[2m])
+            ) * 8)
+            -
+            (sum by (host) (
+              rate(ifHCInOctets{job="MONITORING", host="INET SERVER DC X", ifAlias="2020240040-IX"}[2m] offset 5m)
+              +
+              rate(ifHCOutOctets{job="MONITORING", host="INET SERVER DC X", ifAlias="2020240040-IX"}[2m] offset 5m)
+            ) * 8)
+          ) / 1000000000 > 0.20
+        for: 0m
+        labels:
+          severity: warning
+          category: internasional
+          provider: "X"
+        annotations:
+          summary: "Anomali Internasional - X"
+          description: "Perubahan trafik internasional (gabungan download & upload) pada {{ $labels.host }} melebihi threshold 20% (basis 1 Gbps)"
+
+      # Rule 3: Anomali Domestik - Y
+      - alert: AnomaliDomestik_Y
+        expr: |
+          abs(
+            (sum by (host) (
+              rate(ifHCInOctets{job="MONITORING", host="INET SERVER DC Y", ifAlias="PE TRANSIT DOMESTIK"}[2m])
+              +
+              rate(ifHCOutOctets{job="MONITORING", host="INET SERVER DC Y", ifAlias="PE TRANSIT DOMESTIK"}[2m])
+            ) * 8)
+            -
+            (sum by (host) (
+              rate(ifHCInOctets{job="MONITORING", host="INET SERVER DC Y", ifAlias="PE TRANSIT DOMESTIK"}[2m] offset 5m)
+              +
+              rate(ifHCOutOctets{job="MONITORING", host="INET SERVER DC Y", ifAlias="PE TRANSIT DOMESTIK"}[2m] offset 5m)
+            ) * 8)
+          ) / 200000000 > 0.20
+        for: 0m
+        labels:
+          severity: warning
+          category: domestik
+          provider: "Y"
+        annotations:
+          summary: "Anomali Domestik - Y"
+          description: "Perubahan trafik domestik (gabungan download & upload) pada {{ $labels.host }} melebihi threshold 20% (basis 200 Mbps)"
+
+      # Rule 4: Anomali Internasional - Y
+      - alert: AnomaliInternasional_Y
+        expr: |
+          abs(
+            (sum by (host) (
+              rate(ifHCInOctets{job="MONITORING", host="INET SERVER DC Y", ifAlias="PE TRANSIT GLOBAL"}[2m])
+              +
+              rate(ifHCOutOctets{job="MONITORING", host="INET SERVER DC Y", ifAlias="PE TRANSIT GLOBAL"}[2m])
+            ) * 8)
+            -
+            (sum by (host) (
+              rate(ifHCInOctets{job="MONITORING", host="INET SERVER DC Y", ifAlias="PE TRANSIT GLOBAL"}[2m] offset 5m)
+              +
+              rate(ifHCOutOctets{job="MONITORING", host="INET SERVER DC Y", ifAlias="PE TRANSIT GLOBAL"}[2m] offset 5m)
+            ) * 8)
+          ) / 100000000 > 0.20
+        for: 0m
+        labels:
+          severity: warning
+          category: internasional
+          provider: "Y"
+        annotations:
+          summary: "Anomali Internasional - Y"
+          description: "Perubahan trafik internasional (gabungan download & upload) pada {{ $labels.host }} melebihi threshold 20% (basis 100 Mbps)"
